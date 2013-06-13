@@ -244,9 +244,10 @@ public class Team21Predictor {
 	private static void printUsage() {
 		System.out
 				.println("\nUsage: java -jar team21.jar <input_arff_file_path> [options]");
+		System.out.println("");
 		System.out.println("Options:");
 		System.out
 				.println("--dumpResult	Dumps the results of evaluation in a .run file");
-		System.out.println("\n");
+		System.out.println("");
 	}
 }
