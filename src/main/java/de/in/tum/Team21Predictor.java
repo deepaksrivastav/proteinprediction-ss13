@@ -41,7 +41,7 @@ public class Team21Predictor {
 	 * @throws Exception
 	 */
 	@SuppressWarnings("rawtypes")
-	public void test() throws Exception {
+	public void test() throws IllegalArgumentException, Exception {
 
 		long startTime = System.nanoTime();
 		DataSource testSource = new DataSource(testFileName);
@@ -205,11 +205,22 @@ public class Team21Predictor {
 		return builder.toString();
 	}
 
-	public static void main(String[] args) throws Exception {
+	public static void main(String[] args) {
 		if (args.length < 1) {
 			System.out.println("Kindly pass the input file path");
+			printUsage();
 			return;
 		}
+
+		// check if input file exists
+		File file = new File(args[0]);
+		if (!file.exists() || file.isDirectory()) {
+			System.out
+					.println("The input file does not exist or is a directory. Please enter a valid arff file");
+			printUsage();
+			return;
+		}
+
 		boolean dumpResult = false;
 		if (args.length == 2) {
 			if (args[1].equals("--dumpResult")) {
@@ -218,6 +229,23 @@ public class Team21Predictor {
 		}
 
 		Team21Predictor mlTest = new Team21Predictor(args[0], dumpResult);
-		mlTest.test();
+		try {
+			mlTest.test();
+		} catch (IllegalArgumentException e) {
+			System.out
+					.println("The input file is not a valid protein arff file. Please enter a valid arff file");
+			printUsage();
+		} catch (Exception e) {
+			System.out
+					.println("An unknown error occured while running the predictor.");
+		}
+	}
+
+	private static void printUsage() {
+		System.out
+				.println("\nUsage: java -jar team21.jar <input_arff_file_path> [options]");
+		System.out.println("Options:");
+		System.out
+				.println("--dumpResult	Dumps the results of evaluation in a .run file");
 	}
 }
