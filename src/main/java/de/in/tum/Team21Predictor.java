@@ -23,9 +23,15 @@ public class Team21Predictor {
 
 	private int windowSize = 19;
 
-	public Team21Predictor(String testFileName) {
+	private int numberOfTrees = 120;
+	private int numberOfFeatures = 0;
+
+	private boolean dumpResult = false;
+
+	public Team21Predictor(String testFileName, boolean dumpResult) {
 		super();
 		this.testFileName = testFileName;
+		this.dumpResult = dumpResult;
 	}
 
 	/**
@@ -36,19 +42,21 @@ public class Team21Predictor {
 	 */
 	@SuppressWarnings("rawtypes")
 	public void test() throws Exception {
+
 		long startTime = System.nanoTime();
 		DataSource testSource = new DataSource(testFileName);
 		Instances test = testSource.getDataSet();
 		Instances filteredTest = filter(test);
 		filteredTest.setClassIndex(filteredTest.numAttributes() - 1);
+		numberOfFeatures = filteredTest.numAttributes() / 2;
 
-		/*
-		 * File modelFile = new File(modelFileName); if (!modelFile.exists()) {
-		 * createModel("tmps.arff"); }
-		 */
+		// File modelFile = new File(modelFileName);
+		// if (!modelFile.exists()) {
+		// createModel("tmps.arff");
+		// }
 
-		Vector v = (Vector) SerializationHelper.read(this.getClass().getClassLoader()
-                .getResourceAsStream(modelFileName));
+		Vector v = (Vector) SerializationHelper.read(this.getClass()
+				.getClassLoader().getResourceAsStream(modelFileName));
 		Classifier classifier = (Classifier) v.get(0);
 
 		// output predictions
@@ -78,8 +86,10 @@ public class Team21Predictor {
 			double predictedClass = classifier.classifyInstance(currentInst);
 			System.out.print(filteredTest.instance(i).classAttribute()
 					.value((int) predictedClass));
-			if (predictedClass == filteredTest.instance(i).classValue()) {
-				numCorrect++;
+			if (dumpResult) {
+				if (predictedClass == filteredTest.instance(i).classValue()) {
+					numCorrect++;
+				}
 			}
 		}
 		// blank line
@@ -87,20 +97,22 @@ public class Team21Predictor {
 		long endTime = System.nanoTime();
 		long duration = endTime - startTime;
 
-		File output = new File(System.nanoTime() + ".run");
-		BufferedWriter writer = new BufferedWriter(new FileWriter(output));
-		writer.write(numCorrect
-				+ " out of "
-				+ test.numInstances()
-				+ " correct ("
-				+ (double) ((double) numCorrect / (double) test.numInstances() * 100.0)
-				+ "%)");
-		writer.newLine();
-		writer.write("Duration:" + Double.toString(duration));
-		writer.close();
+		if (dumpResult) {
+			File output = new File(System.nanoTime() + ".run");
+			BufferedWriter writer = new BufferedWriter(new FileWriter(output));
+			writer.write(numCorrect
+					+ " out of "
+					+ test.numInstances()
+					+ " correct ("
+					+ (double) ((double) numCorrect
+							/ (double) test.numInstances() * 100.0) + "%)");
+			writer.newLine();
+			writer.write("Duration:" + Double.toString(duration));
+			writer.close();
+		}
 	}
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@SuppressWarnings({ "rawtypes", "unchecked", "unused" })
 	private void createModel(String trainDataSet) throws Exception {
 		// create the training set
 		DataSource ds = new DataSource("tmps.arff");
@@ -109,7 +121,8 @@ public class Team21Predictor {
 		filteredTrain.setClassIndex(filteredTrain.numAttributes() - 1);
 
 		RandomForest classifier = new RandomForest();
-		classifier.setNumTrees(70);
+		classifier.setNumTrees(numberOfTrees);
+		classifier.setNumFeatures(numberOfFeatures);
 		classifier.buildClassifier(filteredTrain);
 
 		// save model + header
@@ -197,7 +210,14 @@ public class Team21Predictor {
 			System.out.println("Kindly pass the input file path");
 			return;
 		}
-		Team21Predictor mlTest = new Team21Predictor(args[0]);
+		boolean dumpResult = false;
+		if (args.length == 2) {
+			if (args[1].equals("--dumpResult")) {
+				dumpResult = true;
+			}
+		}
+
+		Team21Predictor mlTest = new Team21Predictor(args[0], dumpResult);
 		mlTest.test();
 	}
 }

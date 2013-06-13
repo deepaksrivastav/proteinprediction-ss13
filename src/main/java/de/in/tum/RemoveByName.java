@@ -99,6 +99,7 @@ public class RemoveByName extends SimpleStreamFilter {
 	 * 
 	 * @return an enumeration of all the available options.
 	 */
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public Enumeration listOptions() {
 		Vector result;
 		Enumeration enm;
@@ -127,6 +128,7 @@ public class RemoveByName extends SimpleStreamFilter {
 	 * 
 	 * @return the current options
 	 */
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public String[] getOptions() {
 		int i;
 		Vector<String> result;
