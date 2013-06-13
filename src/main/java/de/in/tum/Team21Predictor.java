@@ -247,5 +247,6 @@ public class Team21Predictor {
 		System.out.println("Options:");
 		System.out
 				.println("--dumpResult	Dumps the results of evaluation in a .run file");
+		System.out.println("\n");
 	}
 }
