@@ -132,6 +132,10 @@ public class PredictionComparator {
 	}
 
 	public static void main(String[] args) throws Exception {
+		if (args.length != 1) {
+			System.out.println("Enter the input ARFF file");
+			return;
+		}
 		Query query = new Query(
 				"Team 21",
 				"http://i12k-biolab01.informatik.tu-muenchen.de/~ppgroup21/cgi-bin/ppgroup21.cgi");
@@ -142,10 +146,8 @@ public class PredictionComparator {
 		queryList.add(query);
 		queryList.add(query2);
 
-		PredictionComparator p = new PredictionComparator(
-				"tmps_independent.arff", queryList);
+		PredictionComparator p = new PredictionComparator(args[0], queryList);
 		p.compareResults();
 		p.displayResults();
-
 	}
 }
