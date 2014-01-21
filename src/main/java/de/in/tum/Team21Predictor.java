@@ -208,6 +208,7 @@ public class Team21Predictor {
 	public static void main(String[] args) {
 		if(args.length == 0){
 			System.out.println("Argument length cannot be zero");
+			System.out.println("Please enter correct one");
 			return;
 		}
 		// check if input file exists
