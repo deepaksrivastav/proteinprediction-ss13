@@ -206,12 +206,10 @@ public class Team21Predictor {
 	}
 
 	public static void main(String[] args) {
-		if (args.length < 1) {
-			System.out.println("Kindly pass the input file path");
-			printUsage();
+		if(args.length == 0){
+			System.out.println("Argument length cannot be zero");
 			return;
 		}
-
 		// check if input file exists
 		File file = new File(args[0]);
 		if (!file.exists() || file.isDirectory()) {
